@@ -16,43 +16,6 @@
 # In[1]:
 
 
-from datasets import load_dataset
-
-mnist = load_dataset("ylecun/mnist")
-mnist
-
-
-# In[2]:
-
-
-mnist["train"]["image"][1]
-
-
-# In[ ]:
-
-
-
-
-
-# In[8]:
-
-
-# from genaibook.core import show_images
-
-show_images(mnist["train"]["image"][:4])
-
-
-# In[9]:
-
-
-import matplotlib as mpl
-
-mpl.rcParams["image.cmap"] = "gray_r"
-
-
-# In[59]:
-
-
 import matplotlib.pyplot as plt
 import math
 import numpy as np
@@ -183,6 +146,43 @@ def show_images(images, titles=None, ncols=None, nrows=None, imsize=3, figsize=N
 
 
 # In[10]:
+
+
+from datasets import load_dataset
+
+mnist = load_dataset("ylecun/mnist")
+mnist
+
+
+# In[2]:
+
+
+mnist["train"]["image"][1]
+
+
+# In[ ]:
+
+
+
+
+
+# In[8]:
+
+
+# from genaibook.core import show_images
+
+show_images(mnist["train"]["image"][:4])
+
+
+# In[9]:
+
+
+import matplotlib as mpl
+
+mpl.rcParams["image.cmap"] = "gray_r"
+
+
+# In[59]:
 
 
 show_images(mnist["train"]["image"][:4])
