@@ -42,7 +42,7 @@ huggingface_hub.logging.set_verbosity_error()
 # In[3]:
 
 
-get_ipython().system('uv pip install genaibook')
+# get_ipython().system('uv pip install genaibook')
 
 
 # In[4]:
