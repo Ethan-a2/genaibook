@@ -71,7 +71,7 @@ def transform(examples):
 train_dataset = fashion_mnist["train"].with_transform(transform)
 
 train_dataloader = torch.utils.data.DataLoader(
-    train_dataset, batch_size=256, shuffle=True
+    train_dataset, batch_size=64, shuffle=True  # Reduced batch size to 64
 )
 
 
@@ -136,7 +136,7 @@ scheduler = DDPMScheduler(
     num_train_timesteps=1000, beta_start=0.0001, beta_end=0.02
 )
 
-num_epochs = 25
+num_epochs = 2  # 25 -> 2
 lr = 3e-4
 optimizer = torch.optim.AdamW(model.parameters(), lr=lr, eps=1e-5)
 losses = []  # To store loss values for plotting
@@ -216,7 +216,7 @@ torch.save(model, "mnist_classcond.pth")
 # In[33]:
 
 
-def generate_from_class(class_to_generate, n_samples=8):
+def generate_from_class(class_to_generate, n_samples=4):  # Reduced n_samples to 4
     sample = torch.randn(n_samples, 1, 32, 32).to(device)
     class_labels = [class_to_generate] * n_samples
     class_labels = torch.tensor(class_labels).to(device)
@@ -268,6 +268,7 @@ pipe = StableDiffusionPipeline.from_pretrained(
     torch_dtype=torch.float16,
     variant="fp16",
 ).to(device)
+pipe.enable_model_cpu_offload()  # Added to reduce VRAM usage
 
 
 # In[7]:
@@ -576,6 +577,7 @@ pipe = StableDiffusionPipeline.from_pretrained(
     torch_dtype=torch.float16,
     variant="fp16",
 ).to(device)
+pipe.enable_model_cpu_offload()  # Added to reduce VRAM usage
 
 
 # In[ ]:
@@ -676,6 +678,7 @@ pipe = StableDiffusionPipeline.from_pretrained(
     torch_dtype=torch.float16,
     variant="fp16",
 ).to(device)
+pipe.enable_model_cpu_offload()  # Added to reduce VRAM usage
 
 
 # And let's kick off with an initial image
@@ -797,11 +800,12 @@ from PIL import Image
 # Model setup
 device = "cuda" if torch.cuda.is_available() else "cpu"
 pipe = DDPMPipeline.from_pretrained("google/ddpm-celebahq-256").to(device)
+pipe.enable_model_cpu_offload()  # Added to reduce VRAM usage
 pipe.scheduler.set_timesteps(num_inference_steps=30)
 guidance_loss_scale = 60  # Try changing this to 5 or 100
 
 # Input setup
-x = torch.randn(8, 3, 256, 256).to(device)
+x = torch.randn(4, 3, 256, 256).to(device)  # Reduced batch size to 4
 
 # Main loop
 for i, t in enumerate(pipe.scheduler.timesteps):
@@ -827,7 +831,6 @@ for i, t in enumerate(pipe.scheduler.timesteps):
     x = pipe.scheduler.step(noise_pred, t, x).prev_sample
 
 # View the output
-grid = torchvision.utils.make_grid(x, nrow=4)
+grid = torchvision.utils.make_grid(x, nrow=2)
 im = grid.permute(1, 2, 0).cpu().clip(-1, 1) * 0.5 + 0.5
 Image.fromarray(np.array(im * 255).astype(np.uint8))
-
